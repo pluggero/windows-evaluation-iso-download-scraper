@@ -1,0 +1,63 @@
+name: scrape
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * WED"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        target:
+          - windows-11-enterprise
+          - windows-11-enterprise-ltsc
+          - windows-11-iot-enterprise-ltsc
+          - windows-2022
+          - windows-2025
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Scrape ${{ matrix.target }}
+        run: python3 scrape.py ${{ matrix.target }}
+
+      - name: Show result
+        run: cat data/${{ matrix.target }}.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: data/${{ matrix.target }}.json
+
+  commit:
+    needs: scrape
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: data
+          merge-multiple: true
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain data/)" ]; then
+            git add data/
+            git commit -m "chore: update iso urls $(date -u +%Y-%m-%d)"
+            git pull --rebase
+            git push
+          else
+            echo "No changes to commit"
+          fi
