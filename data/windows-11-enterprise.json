@@ -1,0 +1,9 @@
+{
+  "name": "windows-11-enterprise",
+  "locale": "en-US",
+  "url": "https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26200.6584.250915-1905.25h2_ge_release_svc_refresh_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+  "fwlink": "https://go.microsoft.com/fwlink/?linkid=2334167&clcid=0x409&culture=en-us&country=us",
+  "sha256": "a61adeab895ef5a4db436e0a7011c92a2ff17bb0357f58b13bbc4062e535e7b9",
+  "size": 7092807680,
+  "scraped_at": "2026-03-31T13:15:32Z"
+}
